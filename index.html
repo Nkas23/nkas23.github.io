@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nicolas Gonzalez, Data Architect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0b0f1a;
+    --surface:  #111827;
+    --surface2: #1a2235;
+    --border:   #1e2d45;
+    --teal:     #00d4aa;
+    --teal-dim: #00a886;
+    --teal-glow:#00d4aa22;
+    --text:     #e8edf5;
+    --muted:    #7a8ba3;
+    --accent:   #3b82f6;
+    --font-display: 'Syne', sans-serif;
+    --font-body:    'DM Sans', sans-serif;
+    --font-mono:    'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 4rem;
+    background: rgba(11,15,26,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--teal);
+    letter-spacing: 0.05em;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--teal); }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Grid dot background */
+  #hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, #1e2d45 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: 0.6;
+    z-index: 0;
+  }
+
+  /* Teal glow orb */
+  #hero::after {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,212,170,0.08) 0%, transparent 70%);
+    top: -100px; right: -100px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .hero-inner { position: relative; z-index: 1; max-width: 900px; }
+
+  .hero-label {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--teal);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .hero-label::before {
+    content: '';
+    display: inline-block;
+    width: 2rem; height: 1px;
+    background: var(--teal);
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 800;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+  h1 span { color: var(--teal); }
+
+  .hero-roles {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-bottom: 1.5rem;
+    margin-top: -0.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.15rem;
+    color: var(--muted);
+    max-width: 540px;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--teal);
+    color: #0b0f1a;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 0.8rem 1.6rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: #00f0c0; transform: translateY(-1px); }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    padding: 0.8rem 1.6rem;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+
+  /* ─── PIPELINE ANIMATION ─── */
+  .pipeline-bar {
+    display: flex; align-items: center; gap: 0; margin-top: 4rem;
+    font-family: var(--font-mono); font-size: 12px;
+  }
+  .pipeline-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.4rem 0.9rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .pipeline-node.active { border-color: var(--teal); color: var(--teal); }
+  .pipeline-arrow {
+    width: 2.5rem; height: 1px;
+    background: linear-gradient(90deg, var(--border), var(--teal-dim));
+    position: relative;
+    flex-shrink: 0;
+  }
+  .pipeline-arrow::after {
+    content: '▶';
+    position: absolute; right: -6px; top: -6px;
+    color: var(--teal-dim); font-size: 11px;
+  }
+
+  /* ─── SECTION LAYOUT ─── */
+  section { padding: 6rem 4rem; }
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--teal);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    color: var(--text);
+  }
+  .section-intro {
+    color: var(--muted);
+    max-width: 580px;
+    margin-bottom: 3rem;
+    font-weight: 300;
+  }
+
+  /* ─── ABOUT ─── */
+  #about { background: var(--surface); }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .about-text p { color: var(--muted); margin-bottom: 1.2rem; font-weight: 300; line-height: 1.9; }
+  .about-text strong { color: var(--text); font-weight: 500; }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .stat-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.4rem;
+  }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--teal);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-family: var(--font-mono);
+  }
+
+  /* ─── PROJECT ─── */
+  #project { background: var(--bg); }
+
+  .medallion-flow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .medallion-card {
+    border-radius: 8px;
+    padding: 1.8rem;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .medallion-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .bronze { background: var(--surface); }
+  .bronze::before { background: #cd7f32; }
+  .silver { background: var(--surface); }
+  .silver::before { background: #a8a9ad; }
+  .gold   { background: var(--surface); }
+  .gold::before   { background: #ffd700; }
+
+  .layer-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+  .bronze .layer-badge { color: #cd7f32; }
+  .silver .layer-badge { color: #a8a9ad; }
+  .gold   .layer-badge { color: #ffd700; }
+
+  .medallion-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+  .medallion-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  .tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+  .tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.2rem 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.4rem;
+    text-align: center;
+  }
+  .kpi-val {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--teal);
+  }
+  .kpi-desc { font-size: 12px; color: var(--muted); margin-top: 0.3rem; font-family: var(--font-mono); letter-spacing: 0.05em; }
+
+  /* ─── STACK TABS ─── */
+  .stack-tabs {
+    display: flex; gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  .stack-tab {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    padding: 0.55rem 1.4rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .stack-tab:hover { border-color: var(--teal); color: var(--teal); }
+  .stack-tab.active { background: var(--teal); color: #0b0f1a; border-color: var(--teal); font-weight: 500; }
+
+  .stack-group-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin: 1.8rem 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .stack-group-label:first-child { margin-top: 0; }
+
+  /* ─── STACK ─── */
+  #stack { background: var(--surface); }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+  .stack-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    transition: border-color 0.2s;
+  }
+  .stack-item:hover { border-color: var(--teal); }
+  .stack-category {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.4rem;
+  }
+  .stack-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* ─── PHASES TIMELINE ─── */
+  #phases { background: var(--bg); }
+  .timeline { position: relative; padding-left: 2.5rem; }
+  .timeline::before {
+    content: '';
+    position: absolute; left: 7px; top: 8px; bottom: 8px;
+    width: 1px; background: var(--border);
+  }
+  .phase {
+    position: relative;
+    margin-bottom: 2.5rem;
+  }
+  .phase::before {
+    content: '';
+    position: absolute; left: -2.5rem; top: 6px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--teal);
+    background: var(--bg);
+    z-index: 1;
+  }
+  .phase.complete::before { background: var(--teal); }
+  .phase-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+  .phase h3 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+  .phase p { font-size: 14px; color: var(--muted); max-width: 560px; }
+  .phase-status {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 0.15rem 0.6rem;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+  }
+  .status-done { background: rgba(0,212,170,0.1); color: var(--teal); border: 1px solid rgba(0,212,170,0.3); }
+  .status-next { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+
+  /* ─── CONTACT ─── */
+  #contact { background: var(--surface); text-align: center; padding: 6rem 4rem; }
+  #contact h2 { margin-bottom: 1rem; }
+  #contact p { color: var(--muted); max-width: 480px; margin: 0 auto 2.5rem; font-weight: 300; }
+  .contact-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  footer a { color: var(--teal); text-decoration: none; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero-inner > * {
+    animation: fadeUp 0.7s ease both;
+  }
+  .hero-inner > *:nth-child(1) { animation-delay: 0.05s; }
+  .hero-inner > *:nth-child(2) { animation-delay: 0.15s; }
+  .hero-inner > *:nth-child(3) { animation-delay: 0.25s; }
+  .hero-inner > *:nth-child(4) { animation-delay: 0.35s; }
+  .hero-inner > *:nth-child(5) { animation-delay: 0.45s; }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .live-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal);
+    animation: pulse-dot 2s ease infinite;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #hero { padding: 6rem 1.5rem 3rem; }
+    section { padding: 4rem 1.5rem; }
+    .about-grid { grid-template-columns: 1fr; }
+    .medallion-flow { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    .pipeline-bar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">NG // Data Architecture</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#project">Project</a></li>
+    <li><a href="#stack">Stack</a></li>
+    <li><a href="#phases">Build</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-label">
+      Data Architect &nbsp;·&nbsp; Tampa Bay Area &amp; Remote
+    </div>
+    <h1>Nicolas<br /><span>Gonzalez</span></h1>
+    <p class="hero-roles">Data Architect &nbsp;·&nbsp; Senior Data Engineer &nbsp;·&nbsp; Analytics Engineer</p>
+    <p class="hero-subtitle">
+      Data Architect building pipelines built on Medallion Architecture, cloud data warehousing, and analytics engineering from source to dashboard. Tampa Bay Area · Remote.
+    </p>
+    <div class="hero-ctas">
+      <a href="#project" class="btn-primary">View Project →</a>
+      <a href="https://github.com/Nkas23/reel-data-architecture" target="_blank" class="btn-ghost">GitHub ↗</a>
+      <a href="#contact" class="btn-ghost">Get in Touch</a>
+    </div>
+
+    <!-- Pipeline visual -->
+    <div class="pipeline-bar">
+      <div class="pipeline-node">Reel App</div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node">Supabase / PostgreSQL</div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node active">Bronze</div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node active">Silver</div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node active">Gold</div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node">Power BI</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">About</div>
+  <div class="about-grid">
+    <div class="about-text">
+      <h2>Business sense<br />meets engineering<br />depth.</h2>
+      <p>
+        Born in Spain and fully bilingual, I'm a <strong>Senior Operations Analyst at Franklin Energy Services</strong>, a 1,300-person energy consulting firm, where I lead a team of 6 analysts across the East US driving strategy, process improvement, data reporting, financial reporting, AI implementation, and stakeholder insights focused on improving overall company margin after EBITDA.
+      </p>
+      <p>
+        My academic foundation, a <strong>B.S. in Business Administration</strong> with a Marketing minor and a <strong>Master's in Management Sciences and Quantitative Methods</strong>, gives me an edge that's rare in pure engineering roles. I understand the business behind the data, not just the pipeline.
+      </p>
+      <p>
+        I'm a self-driven builder. When I wanted to understand data architecture at a deeper level, I didn't take a course. I <strong>designed and built a Medallion data pipeline from the ground up</strong>, behind a real iOS and Android fishing app I'm actively developing. That's how I learn, by doing.
+      </p>
+      <p>
+        Outside of work I'm passionate about sports, fishing, reading, and building businesses. Reel started as a personal idea born from time on the water, and became a real engineering project from mobile to database.
+      </p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-card">
+        <div class="stat-num">3+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Direct Reports</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Native Languages</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">M.S.</div>
+        <div class="stat-label">Graduate Degree</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT -->
+<section id="project">
+  <div class="section-label">Flagship Project</div>
+  <h2>Reel, Medallion<br />Data Architecture</h2>
+  <p class="section-intro">
+    Reel is a fishing app I'm actively developing for iOS and Android using React Native and Expo. Rather than a toy project, I designed the full data architecture you would find in any enterprise behind it, demonstrating how a real company would structure its data from mobile app to executive dashboard.
+  </p>
+
+  <div class="medallion-flow">
+    <div class="medallion-card bronze">
+      <div class="layer-badge">Bronze Layer</div>
+      <h3>Raw Ingestion</h3>
+      <p>All source data lands here unmodified, with full audit metadata preserved. Every column stored as TEXT to ensure zero-loss ingestion from PostgreSQL via Python.</p>
+      <div class="tag-list">
+        <span class="tag">Python</span>
+        <span class="tag">Snowflake</span>
+        <span class="tag">python-dotenv</span>
+        <span class="tag">Batch 1000</span>
+      </div>
+    </div>
+    <div class="medallion-card silver">
+      <div class="layer-badge">Silver Layer</div>
+      <h3>Cleaned &amp; Typed</h3>
+      <p>Eight dbt views apply data type casting, null handling, and business logic standardization. No aggregation, row-level fidelity is preserved for Gold models.</p>
+      <div class="tag-list">
+        <span class="tag">dbt Cloud</span>
+        <span class="tag">8 Views</span>
+        <span class="tag">Type Casting</span>
+        <span class="tag">Null Handling</span>
+      </div>
+    </div>
+    <div class="medallion-card gold">
+      <div class="layer-badge">Gold Layer</div>
+      <h3>Business Metrics</h3>
+      <p>Five dbt table models power executive KPIs: MRR, conversion funnels, retention cohorts, species leaderboards, and regional activity maps, served to Power BI.</p>
+      <div class="tag-list">
+        <span class="tag">5 Tables</span>
+        <span class="tag">MRR</span>
+        <span class="tag">Retention</span>
+        <span class="tag">Power BI</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-val">$344.55</div>
+      <div class="kpi-desc">Monthly Recurring Revenue</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">45.44%</div>
+      <div class="kpi-desc">Free → Paid Conversion</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">100</div>
+      <div class="kpi-desc">Total Users (Seed Data)</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 2.5rem; text-align: center;">
+    <a href="https://github.com/Nkas23/reel-data-architecture" target="_blank" class="btn-primary">View on GitHub ↗</a>
+  </div>
+</section>
+
+<!-- STACK -->
+<section id="stack">
+  <div class="section-label">Tech Stack</div>
+  <h2>Tools &amp; Technologies</h2>
+  <p class="section-intro">Full breadth of skills across analytics, engineering, and development, plus the specific tools powering the Reel data architecture.</p>
+
+  <div class="stack-tabs">
+    <button class="stack-tab active" onclick="switchTab('all')">All Skills</button>
+    <button class="stack-tab" onclick="switchTab('reel')">Reel Project</button>
+  </div>
+
+  <!-- ALL SKILLS -->
+  <div id="tab-all" class="stack-panel">
+
+    <div class="stack-group-label">Languages</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">Query</div><div class="stack-name">SQL</div></div>
+      <div class="stack-item"><div class="stack-category">General Purpose</div><div class="stack-name">Python</div></div>
+      <div class="stack-item"><div class="stack-category">Statistical</div><div class="stack-name">R</div></div>
+      <div class="stack-item"><div class="stack-category">Web</div><div class="stack-name">HTML · CSS · JavaScript</div></div>
+    </div>
+
+    <div class="stack-group-label">Python Libraries</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">Data Manipulation</div><div class="stack-name">Pandas</div></div>
+      <div class="stack-item"><div class="stack-category">Numerical Computing</div><div class="stack-name">NumPy</div></div>
+      <div class="stack-item"><div class="stack-category">Machine Learning</div><div class="stack-name">Scikit-learn</div></div>
+      <div class="stack-item"><div class="stack-category">Visualization</div><div class="stack-name">Matplotlib · Seaborn</div></div>
+      <div class="stack-item"><div class="stack-category">Interactive Charts</div><div class="stack-name">Plotly</div></div>
+      <div class="stack-item"><div class="stack-category">Database ORM</div><div class="stack-name">SQLAlchemy</div></div>
+      <div class="stack-item"><div class="stack-category">Excel Automation</div><div class="stack-name">openpyxl</div></div>
+      <div class="stack-item"><div class="stack-category">Synthetic Data</div><div class="stack-name">Faker</div></div>
+      <div class="stack-item"><div class="stack-category">Secret Management</div><div class="stack-name">python-dotenv</div></div>
+    </div>
+
+    <div class="stack-group-label">Data &amp; Analytics</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">Data Warehouse</div><div class="stack-name">Snowflake</div></div>
+      <div class="stack-item"><div class="stack-category">Transformation</div><div class="stack-name">dbt Cloud</div></div>
+      <div class="stack-item"><div class="stack-category">Operational DB</div><div class="stack-name">PostgreSQL · Supabase</div></div>
+      <div class="stack-item"><div class="stack-category">BI &amp; Dashboards</div><div class="stack-name">Power BI</div></div>
+      <div class="stack-item"><div class="stack-category">BI &amp; Dashboards</div><div class="stack-name">Tableau</div></div>
+      <div class="stack-item"><div class="stack-category">Spreadsheets</div><div class="stack-name">Excel</div></div>
+    </div>
+
+    <div class="stack-group-label">Cloud &amp; Infrastructure</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">Cloud Platform</div><div class="stack-name">Azure (Certified)</div></div>
+      <div class="stack-item"><div class="stack-category">Version Control</div><div class="stack-name">Git · GitHub</div></div>
+      <div class="stack-item"><div class="stack-category">IDE</div><div class="stack-name">VS Code</div></div>
+    </div>
+
+    <div class="stack-group-label">Mobile Development</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">Framework</div><div class="stack-name">React Native</div></div>
+      <div class="stack-item"><div class="stack-category">Toolchain</div><div class="stack-name">Expo</div></div>
+      <div class="stack-item"><div class="stack-category">Backend</div><div class="stack-name">Supabase</div></div>
+    </div>
+
+  </div>
+
+  <!-- REEL PROJECT ONLY -->
+  <div id="tab-reel" class="stack-panel" style="display:none;">
+
+    <div class="stack-group-label">Ingestion &amp; Storage</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">Operational DB</div><div class="stack-name">Supabase / PostgreSQL</div></div>
+      <div class="stack-item"><div class="stack-category">Data Warehouse</div><div class="stack-name">Snowflake</div></div>
+      <div class="stack-item"><div class="stack-category">Ingestion Script</div><div class="stack-name">Python · SQLAlchemy</div></div>
+      <div class="stack-item"><div class="stack-category">Secret Management</div><div class="stack-name">python-dotenv</div></div>
+    </div>
+
+    <div class="stack-group-label">Transformation</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">ELT Framework</div><div class="stack-name">dbt Cloud</div></div>
+      <div class="stack-item"><div class="stack-category">Silver Layer</div><div class="stack-name">8 dbt Views</div></div>
+      <div class="stack-item"><div class="stack-category">Gold Layer</div><div class="stack-name">5 dbt Tables</div></div>
+      <div class="stack-item"><div class="stack-category">Query Language</div><div class="stack-name">SQL</div></div>
+    </div>
+
+    <div class="stack-group-label">Data Generation</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">Scripting</div><div class="stack-name">Python</div></div>
+      <div class="stack-item"><div class="stack-category">Synthetic Data</div><div class="stack-name">Faker</div></div>
+      <div class="stack-item"><div class="stack-category">Data Manipulation</div><div class="stack-name">Pandas</div></div>
+    </div>
+
+    <div class="stack-group-label">Visualization &amp; Delivery</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">Dashboard</div><div class="stack-name">Power BI Desktop</div></div>
+      <div class="stack-item"><div class="stack-category">Connection Mode</div><div class="stack-name">Import Mode</div></div>
+    </div>
+
+    <div class="stack-group-label">DevOps &amp; Workflow</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-category">Version Control</div><div class="stack-name">Git · GitHub</div></div>
+      <div class="stack-item"><div class="stack-category">Branching</div><div class="stack-name">Feature Branch + PR</div></div>
+      <div class="stack-item"><div class="stack-category">IDE</div><div class="stack-name">VS Code</div></div>
+      <div class="stack-item"><div class="stack-category">Mobile App</div><div class="stack-name">React Native · Expo</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PHASES TIMELINE -->
+<section id="phases">
+  <div class="section-label">Build Log</div>
+  <h2>Project Phases</h2>
+  <p class="section-intro">Building a real app means building real infrastructure. Here's how the data architecture behind Reel came together, from schema design to a live analytics layer.</p>
+
+  <div class="timeline">
+    <div class="phase complete">
+      <div class="phase-num">Phase 01</div>
+      <h3>Foundation, Schema &amp; ERD</h3>
+      <p>Designed 8-table PostgreSQL schema (users, subscriptions, species, regulations, fishing_sessions, gps_events, catches, social_posts), deployed to Supabase East US, built ERD and data dictionary.</p>
+      <span class="phase-status status-done">✓ Complete</span>
+    </div>
+    <div class="phase complete">
+      <div class="phase-num">Phase 02</div>
+      <h3>Synthetic Data Generation</h3>
+      <p>Built deterministic Python seed script using Faker with random.seed(42), generating 2,720 records across all 8 tables. Data loaded to Supabase successfully.</p>
+      <span class="phase-status status-done">✓ Complete</span>
+    </div>
+    <div class="phase complete">
+      <div class="phase-num">Phase 03</div>
+      <h3>Snowflake + dbt Pipeline</h3>
+      <p>Provisioned REEL_WH warehouse with Bronze/Silver/Gold schemas. Wrote Python Bronze ingestion script and 12 dbt models (7 Silver views + 5 Gold tables). All models passing in dbt Cloud.</p>
+      <span class="phase-status status-done">✓ Complete</span>
+    </div>
+    <div class="phase complete">
+      <div class="phase-num">Phase 04</div>
+      <h3>Power BI Dashboard</h3>
+      <p>Connected Power BI Desktop to Snowflake Gold layer via Import mode. Built 6 KPI visuals covering MRR, conversion rate, revenue by tier, species leaderboard, and regional activity, with a dark professional theme.</p>
+      <span class="phase-status status-done">✓ Complete</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">Let's Connect</div>
+  <h2>Let's talk<br />data.</h2>
+  <p>I enjoy conversations about data architecture, pipeline design, and building systems that scale. Whether it's a collaboration, feedback on the Reel project, or just trading ideas, reach out.</p>
+  <div class="contact-links">
+    <a href="https://github.com/Nkas23" target="_blank" class="btn-primary">GitHub ↗</a>
+    <a href="https://linkedin.com/in/nicolasgonzalez" target="_blank" class="btn-ghost">LinkedIn ↗</a>
+    <a href="mailto:nicolas@example.com" class="btn-ghost">Email</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Nicolas Gonzalez, Data Architect</span>
+  <span>Built with HTML · Deployed on <a href="https://github.com/Nkas23/nkas23.github.io" target="_blank">GitHub Pages</a></span>
+</footer>
+
+<script>
+function switchTab(tab) {
+  document.getElementById('tab-all').style.display  = tab === 'all'  ? 'block' : 'none';
+  document.getElementById('tab-reel').style.display = tab === 'reel' ? 'block' : 'none';
+  document.querySelectorAll('.stack-tab').forEach(function(btn, i) {
+    btn.classList.toggle('active', (i === 0 && tab === 'all') || (i === 1 && tab === 'reel'));
+  });
+}
+</script>
+</body>
+</html>
