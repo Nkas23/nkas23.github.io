@@ -527,6 +527,7 @@
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#project">Project</a></li>
+    <li><a href="#datamodel">Schema</a></li>
     <li><a href="#stack">Stack</a></li>
     <li><a href="#phases">Build</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -671,7 +672,168 @@
   </div>
 </section>
 
-<!-- STACK -->
+<!-- DATA MODEL -->
+<section id="datamodel" style="background: var(--surface);">
+  <div class="section-label">Data Model</div>
+  <h2>Schema Design</h2>
+  <p class="section-intro">Eight tables designed for a real mobile app, built the way a company database would be structured, with proper relationships, indexes, and security from day one.</p>
+
+  <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 2.5rem; overflow-x: auto;">
+    <style>
+      #erd svg { width: 100%; }
+      #erd svg.erDiagram .divider path { stroke-opacity: 0.5; }
+      #erd svg.erDiagram .row-rect-odd path,
+      #erd svg.erDiagram .row-rect-odd rect,
+      #erd svg.erDiagram .row-rect-even path,
+      #erd svg.erDiagram .row-rect-even rect { stroke: none !important; }
+    </style>
+    <div id="erd" style="padding: 1rem 0;"></div>
+    <script type="module">
+      import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+      await document.fonts.ready;
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'dark',
+        fontFamily: 'DM Mono, monospace',
+        themeVariables: {
+          darkMode: true,
+          fontSize: '11px',
+          lineColor: '#00d4aa',
+          textColor: '#e8edf5',
+          primaryColor: '#1a2235',
+          primaryBorderColor: '#1e2d45',
+          primaryTextColor: '#e8edf5',
+          edgeLabelBackground: '#111827',
+        },
+      });
+      const diagram = `erDiagram
+        USERS {
+          uuid user_id PK
+          varchar email
+          varchar display_name
+          varchar state
+          varchar city
+          timestamptz created_at
+          timestamptz updated_at
+        }
+        SUBSCRIPTIONS {
+          uuid subscription_id PK
+          uuid user_id FK
+          varchar tier
+          numeric price_usd
+          varchar status
+          timestamptz started_at
+          timestamptz ended_at
+        }
+        SPECIES {
+          uuid species_id PK
+          varchar common_name
+          varchar scientific_name
+          varchar habitat
+          boolean native_to_fl
+        }
+        REGULATIONS {
+          uuid regulation_id PK
+          uuid species_id FK
+          varchar region
+          numeric min_size_inches
+          integer bag_limit
+          date season_open
+          date season_close
+          date effective_date
+        }
+        FISHING_SESSIONS {
+          uuid session_id PK
+          uuid user_id FK
+          timestamptz started_at
+          timestamptz ended_at
+          integer duration_minutes
+          varchar location_name
+          varchar water_body_type
+          varchar county
+          varchar weather
+        }
+        GPS_EVENTS {
+          uuid gps_id PK
+          uuid session_id FK
+          uuid user_id FK
+          numeric latitude
+          numeric longitude
+          timestamptz recorded_at
+          numeric accuracy_meters
+        }
+        CATCHES {
+          uuid catch_id PK
+          uuid session_id FK
+          uuid user_id FK
+          uuid species_id FK
+          numeric length_inches
+          numeric weight_lbs
+          boolean ai_identified
+          numeric ai_confidence_score
+          boolean was_released
+          boolean regulation_compliant
+          timestamptz caught_at
+        }
+        SOCIAL_POSTS {
+          uuid post_id PK
+          uuid user_id FK
+          uuid catch_id FK
+          uuid session_id FK
+          text caption
+          integer likes_count
+          integer comments_count
+          boolean is_public
+          timestamptz posted_at
+        }
+        USERS ||--o{ SUBSCRIPTIONS : "has"
+        USERS ||--o{ FISHING_SESSIONS : "starts"
+        USERS ||--o{ CATCHES : "logs"
+        USERS ||--o{ GPS_EVENTS : "generates"
+        USERS ||--o{ SOCIAL_POSTS : "creates"
+        FISHING_SESSIONS ||--o{ CATCHES : "contains"
+        FISHING_SESSIONS ||--o{ GPS_EVENTS : "tracks"
+        FISHING_SESSIONS ||--o{ SOCIAL_POSTS : "linked to"
+        SPECIES ||--o{ REGULATIONS : "governed by"
+        SPECIES ||--o{ CATCHES : "identified in"
+        CATCHES ||--o{ SOCIAL_POSTS : "featured in"
+      `;
+      const { svg } = await mermaid.render('erd-svg', diagram);
+      document.getElementById('erd').innerHTML = svg;
+    </script>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+    <div class="stack-item">
+      <div class="stack-category">UUID over Integer IDs</div>
+      <div class="stack-name" style="font-size:13px; color: var(--muted); font-weight:300; margin-top:0.4rem; line-height:1.7;">Globally unique, non-guessable, and safe to use across Supabase and Snowflake without ID conflicts. Integers are sequential and predictable, a security risk in any public API.</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-category">Computed duration_minutes</div>
+      <div class="stack-name" style="font-size:13px; color: var(--muted); font-weight:300; margin-top:0.4rem; line-height:1.7;">PostgreSQL calculates it automatically from ended_at minus started_at. This removes business logic from the app layer and guarantees the value is always mathematically consistent.</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-category">user_id Denormalized into GPS and Catches</div>
+      <div class="stack-name" style="font-size:13px; color: var(--muted); font-weight:300; margin-top:0.4rem; line-height:1.7;">At scale, GPS events grow into millions of rows. Adding user_id directly removes a join and makes regional queries significantly faster. A deliberate performance trade-off.</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-category">Row Level Security on Supabase</div>
+      <div class="stack-name" style="font-size:13px; color: var(--muted); font-weight:300; margin-top:0.4rem; line-height:1.7;">Without RLS, any authenticated user could query all catches from all users. With RLS enabled, the database enforces privacy at the row level regardless of what query is run.</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-category">10 Strategic Indexes</div>
+      <div class="stack-name" style="font-size:13px; color: var(--muted); font-weight:300; margin-top:0.4rem; line-height:1.7;">Indexes on user_id, session_id, species_id, tier, county, and started_at eliminate full table scans. At millions of GPS rows the difference between indexed and non-indexed queries is seconds vs milliseconds.</div>
+    </div>
+    <div class="stack-item">
+      <div class="stack-category">GPS Partition Strategy at Scale</div>
+      <div class="stack-name" style="font-size:13px; color: var(--muted); font-weight:300; margin-top:0.4rem; line-height:1.7;">GPS events are the highest volume table, continuous pings throughout every session. At scale, partition by month on recorded_at in PostgreSQL and use clustering keys in Snowflake. Data older than 12 months moves to cold storage.</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem; text-align: center;">
+    <a href="https://github.com/Nkas23/reel-data-architecture/blob/main/docs/data_dictionary.md" target="_blank" class="btn-ghost">View Full Data Dictionary ↗</a>
+  </div>
+</section>
 <section id="stack">
   <div class="section-label">Tech Stack</div>
   <h2>Tools &amp; Technologies</h2>
