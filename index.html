@@ -4,6 +4,16 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Nicolas Gonzalez, Data Architect</title>
+<meta name="description" content="Nicolas Gonzalez, Data Architect and Senior Data Engineer based in the Tampa Bay Area. Builder of production Medallion Architecture pipelines using Snowflake, dbt, PostgreSQL, and Power BI." />
+<meta property="og:title" content="Nicolas Gonzalez, Data Architect" />
+<meta property="og:description" content="Nicolas Gonzalez, Data Architect and Senior Data Engineer based in the Tampa Bay Area. Builder of production Medallion Architecture pipelines using Snowflake, dbt, PostgreSQL, and Power BI." />
+<meta property="og:image" content="https://nkas23.github.io/erd_diagram.png" />
+<meta property="og:url" content="https://nkas23.github.io" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Nicolas Gonzalez, Data Architect" />
+<meta name="twitter:description" content="Data Architect building production Medallion pipelines. Snowflake, dbt, PostgreSQL, Power BI. Tampa Bay Area and Remote." />
+<meta name="twitter:image" content="https://nkas23.github.io/erd_diagram.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
@@ -678,131 +688,14 @@
   <h2>Schema Design</h2>
   <p class="section-intro">Eight tables designed for a real mobile app, built the way a company database would be structured, with proper relationships, indexes, and security from day one.</p>
 
-  <div style="background: #f8f6f0; border: 1px solid #d4c9b0; border-radius: 8px; padding: 1.5rem; margin-bottom: 2.5rem; overflow-x: auto;">
-    <style>
-      #erd svg { width: 100%; min-width: 700px; }
-      #erd svg.erDiagram .divider path { stroke-opacity: 0.5; }
-      #erd svg.erDiagram .row-rect-odd path,
-      #erd svg.erDiagram .row-rect-odd rect,
-      #erd svg.erDiagram .row-rect-even path,
-      #erd svg.erDiagram .row-rect-even rect { stroke: none !important; }
-    </style>
-    <div id="erd" style="padding: 1rem 0;"></div>
-    <script type="module">
-      import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
-      await document.fonts.ready;
-      mermaid.initialize({
-        startOnLoad: false,
-        theme: 'base',
-        fontFamily: 'DM Mono, monospace',
-        themeVariables: {
-          darkMode: false,
-          fontSize: '12px',
-          lineColor: '#0f6e56',
-          textColor: '#1a2235',
-          primaryColor: '#fdf8ee',
-          primaryBorderColor: '#c9b99a',
-          primaryTextColor: '#1a2235',
-          edgeLabelBackground: '#f8f6f0',
-          secondaryColor: '#e8f5f0',
-          tertiaryColor: '#fdf8ee',
-        },
-      });
-      const diagram = `erDiagram
-        USERS {
-          uuid user_id PK
-          varchar email
-          varchar display_name
-          varchar state
-          varchar city
-          timestamptz created_at
-          timestamptz updated_at
-        }
-        SUBSCRIPTIONS {
-          uuid subscription_id PK
-          uuid user_id FK
-          varchar tier
-          numeric price_usd
-          varchar status
-          timestamptz started_at
-          timestamptz ended_at
-        }
-        SPECIES {
-          uuid species_id PK
-          varchar common_name
-          varchar scientific_name
-          varchar habitat
-          boolean native_to_fl
-        }
-        REGULATIONS {
-          uuid regulation_id PK
-          uuid species_id FK
-          varchar region
-          numeric min_size_inches
-          integer bag_limit
-          date season_open
-          date season_close
-          date effective_date
-        }
-        FISHING_SESSIONS {
-          uuid session_id PK
-          uuid user_id FK
-          timestamptz started_at
-          timestamptz ended_at
-          integer duration_minutes
-          varchar location_name
-          varchar water_body_type
-          varchar county
-          varchar weather
-        }
-        GPS_EVENTS {
-          uuid gps_id PK
-          uuid session_id FK
-          uuid user_id FK
-          numeric latitude
-          numeric longitude
-          timestamptz recorded_at
-          numeric accuracy_meters
-        }
-        CATCHES {
-          uuid catch_id PK
-          uuid session_id FK
-          uuid user_id FK
-          uuid species_id FK
-          numeric length_inches
-          numeric weight_lbs
-          boolean ai_identified
-          numeric ai_confidence_score
-          boolean was_released
-          boolean regulation_compliant
-          timestamptz caught_at
-        }
-        SOCIAL_POSTS {
-          uuid post_id PK
-          uuid user_id FK
-          uuid catch_id FK
-          uuid session_id FK
-          text caption
-          integer likes_count
-          integer comments_count
-          boolean is_public
-          timestamptz posted_at
-        }
-        USERS ||--o{ SUBSCRIPTIONS : "has"
-        USERS ||--o{ FISHING_SESSIONS : "starts"
-        USERS ||--o{ CATCHES : "logs"
-        USERS ||--o{ GPS_EVENTS : "generates"
-        USERS ||--o{ SOCIAL_POSTS : "creates"
-        FISHING_SESSIONS ||--o{ CATCHES : "contains"
-        FISHING_SESSIONS ||--o{ GPS_EVENTS : "tracks"
-        FISHING_SESSIONS ||--o{ SOCIAL_POSTS : "linked to"
-        SPECIES ||--o{ REGULATIONS : "governed by"
-        SPECIES ||--o{ CATCHES : "identified in"
-        CATCHES ||--o{ SOCIAL_POSTS : "featured in"
-      `;
-      const { svg } = await mermaid.render('erd-svg', diagram);
-      document.getElementById('erd').innerHTML = svg;
-    </script>
+  <div style="border: 1px solid var(--border); border-top: 3px solid var(--teal); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem;">
+    <div style="background: var(--surface2); padding: 0.6rem 1.2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.75rem;">
+      <span style="font-family: var(--font-mono); font-size: 12px; color: var(--teal); letter-spacing: 0.08em;">// database/schema.sql</span>
+      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--muted); margin-left: auto;">8 tables · 11 relationships · 10 indexes</span>
+    </div>
+    <div style="background: #fdfaf4; padding: 1.5rem; overflow-x: auto;">
+      <img src="erd_diagram.png" alt="Reel App Entity Relationship Diagram showing 8 tables and their relationships" style="width: 100%; max-width: 900px; display: block; margin: 0 auto;" />
+    </div>
   </div>
 
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
